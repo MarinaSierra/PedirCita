@@ -1,9 +1,7 @@
 package com.msierra.pedircita;
 
-import android.content.Intent;
 import android.icu.util.Calendar;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -16,13 +14,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.msierra.pedircita.R;
-
 public class MainActivity extends AppCompatActivity {
-    DatePicker calendar;
-    TimePicker time;
+    DatePicker calendario;
+    TimePicker fecha;
     EditText dni;
-    Button reserve;
+    Button reservar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,24 +32,24 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // get layout elements
-        calendar = findViewById(R.id.calendar);
-        time = findViewById(R.id.time);
-        time.setIs24HourView(true);
+        calendario = findViewById(R.id.calendar);
+        fecha = findViewById(R.id.time);
+        fecha.setIs24HourView(true);
         dni = findViewById(R.id.dni);
-        reserve = findViewById(R.id.reserve);
+        reservar = findViewById(R.id.reserve);
 
-        reserve.setOnClickListener(view -> {
-            int day = calendar.getDayOfMonth();
-            int month = calendar.getMonth();
-            int year = calendar.getYear();
-            int hour = time.getHour();
-            int minute = time.getMinute();
+        reservar.setOnClickListener(view -> {
+            int day = calendario.getDayOfMonth();
+            int month = calendario.getMonth();
+            int year = calendario.getYear();
+            int hour = fecha.getHour();
+            int minute = fecha.getMinute();
 
             if (isDateOk(day, month, year)) {
                 if (isTimeOk(hour, minute)) {
                     if (isDNIOk(dni.getText().toString())) {
 
-                        Toast.makeText(this, "Cita reservada", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Su cita ha sido reservada", Toast.LENGTH_SHORT).show();
                     } else {
                         // muestra mensaje de dni no valido
                         Toast.makeText(this, "DNI no válido", Toast.LENGTH_SHORT).show();
@@ -98,6 +94,27 @@ public class MainActivity extends AppCompatActivity {
 
 
     private boolean isDNIOk(String dni) {
-        return (dni != null && dni.matches("^\\d{8}[A-Za-z]$"));
+        boolean correctNumbers = false;
+        boolean correctLetters;
+        String dniNumeros = dni.substring(0, 7);
+
+        for (int i = 0; i < dniNumeros.length(); i++) {
+            int numero = Integer.parseInt(String.valueOf(dniNumeros.charAt(i)));
+
+            correctNumbers= isNumber(numero);
+        }
+
+        char dniLetra = dni.charAt(8);
+
+        correctLetters= isLetter(dniLetra);
+        return correctNumbers && correctLetters;
+    }
+
+    private boolean isNumber (int n){
+        return n >= 0 && n <= 9;
+    }
+
+    private boolean isLetter (char c){
+        return c>=65 && c<=90;
     }
 }
